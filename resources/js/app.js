@@ -13,6 +13,7 @@ import Dashboard from './components/Dashboard.vue'
 import Users from './components/Users.vue'
 import moment from 'moment'
 
+
 //Validation Vform
 import { Form, HasError, AlertError } from 'vform'
 window.Form =Form;  //registered globally
@@ -48,6 +49,32 @@ let routes = [
   Vue.filter('myDate',function (created) {
     return moment(created).format('MMMM Do YYYY, h:mm:ss a');
   });
+
+
+  //ProgressBar 
+  import VueProgressBar from 'vue-progressbar'
+
+  Vue.use(VueProgressBar, {
+    color: 'rgb(143, 255, 199)',
+    failedColor: 'red',
+    height: '3px'
+  })
+
+
+  //Sweet Alert
+  import Swal from 'sweetalert2'
+   window.Swal =Swal
+
+  const toast = Swal.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000
+  })
+  window.toast =toast
+
+  window.Fire = new Vue();
+ 
 
 
 /**

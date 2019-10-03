@@ -41,8 +41,8 @@
                       <td>{{user.type | upText }}</td>
                       <td>{{user.created_at | myDate}}</td>
                       <td>
-                         <a href="#"><i class="fas fa-edit blue"></i></a>
-                         <a href="#"><i class="fas fa-trash red"></i> </a>
+                         <a href="#" ><i class="fas fa-edit blue"></i></a>
+                         <a href="#" @click="deleteUser(user.id)"><i class="fas fa-trash red"></i> </a>
                       </td>
                     </tr>
                  
@@ -135,17 +135,73 @@
 
         },
         methods:{
+          deleteUser(id){           
+          Swal.fire({
+          title: 'Are you sure?',
+          text: "You won't be able to revert this!",
+          type: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+
+              //Send request to the server
+              if (result.value) {
+              this.form.delete('api/user/' +id).then(()=>{ 
+                Swal.fire(
+                'Deleted!',
+                'Your file has been deleted.',
+               'success'
+               )
+             //Fire Custom event
+             Fire.$emit('AfterCreate')  
+              }).catch(()=>{
+                 swal("Failed","There was something wrong","warning");
+              })
+         }
+            
+        })
+          },
             loadUser(){
                 axios.get("api/user").then(({data})=>(this.users = data.data));
             },
             createUser(){
+                 this.$Progress.start()  //start progress bar
+
                 //submit the form via a POST request
-                this.form.post('api/user');
-               // .then(({data}) =>{console.log(data)})
+                this.form.post('api/user')
+                  .then(()=>{
+                    //Fire Custom event
+                   Fire.$emit('AfterCreate')  
+                  //hide modal
+                  $('#addNew').modal('hide');
+
+                  ///sweet alert
+                  toast.fire({   
+                   type: 'success',
+                  title: 'User Created successfully'
+               });
+
+                this.$Progress.finish()  //finish
+                  })
+                  .catch(()=>{
+
+
+                  })
+
+                  
+  
             }
         },
         created(){
             this.loadUser();
+           //Fire Custom event
+            Fire.$on('AfterCreate',()=> {
+              this.loadUser();
+            })
+
+
         }
     
     }
