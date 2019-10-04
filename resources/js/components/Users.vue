@@ -14,7 +14,7 @@
                       <button type="submit" class="btn btn-default"><i class="fas fa-search"></i></button>
                     </div>
                   </div> -->
-                <button class="btn btn-success" data-toggle="modal" data-target="#addNew">
+                <button class="btn btn-success" @click="newModal">
                     Add New <i class="fas fa-user-plus fa-fw"></i></button>
 
                 </div>
@@ -41,7 +41,7 @@
                       <td>{{user.type | upText }}</td>
                       <td>{{user.created_at | myDate}}</td>
                       <td>
-                         <a href="#" ><i class="fas fa-edit blue"></i></a>
+                         <a href="#" @click="editModal(user)"><i class="fas fa-edit blue"></i></a>
                          <a href="#" @click="deleteUser(user.id)"><i class="fas fa-trash red"></i> </a>
                       </td>
                     </tr>
@@ -62,13 +62,14 @@
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="addNewLabel">Add New</h5>
+        <h5 class="modal-title" v-show="!editmode" id="addNewLabel">Add New</h5>
+        <h5 class="modal-title" v-show="editmode" id="addNewLabel">Update User's Info</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
 
-  <form @submit.prevent="createUser">
+  <form @submit.prevent="editmode ? updateUser() : createUser()">
       <div class="modal-body">
      
     <div class="form-group">
@@ -107,7 +108,8 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-        <button type="submit" class="btn btn-primary">Create</button>
+        <button v-show="editmode" type="submit"  class="btn btn-success">Update</button>
+         <button  v-show="!editmode" type="submit" class="btn btn-primary">Create</button>
       </div>
       </form>
     </div>
@@ -122,8 +124,10 @@
     export default {
         data(){
             return{
+              editmode:false,
                 users:{},
                 form:new Form({
+                       id:'',
                        name: '',
                        password: '',
                        email: '',
@@ -135,6 +139,37 @@
 
         },
         methods:{
+          updateUser(){
+            console.log('Editing Data')
+            this.$Progress.start();
+              this.form.put('api/user/' + this.form.id)
+              .then(()=>{
+                //success
+                 $('#addNew').modal('hide');
+                Swal.fire(
+                 'Updated!',
+                 'Information has been Updated.',
+                 'success'
+                 )
+                this.$Progress.finish();
+                Fire.$emit('AfterCreate');
+              })
+              .catch(()=>{
+                 this.$Progress.fail();  //start progress bar
+
+              });
+          },
+          editModal(user){
+             this.editmode =true;
+             this.form.reset();
+              $('#addNew').modal('show');
+              this.form.fill(user); //getting details 
+          },
+          newModal(){
+             this.editmode =false;
+            this.form.reset();
+              $('#addNew').modal('show');
+          },
           deleteUser(id){           
           Swal.fire({
           title: 'Are you sure?',

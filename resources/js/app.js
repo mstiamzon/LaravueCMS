@@ -10,6 +10,7 @@ window.Vue = require('vue');
 
 import Profile from './components/Profile.vue'
 import Dashboard from './components/Dashboard.vue'
+import Developer from './components/Developer.vue'
 import Users from './components/Users.vue'
 import moment from 'moment'
 
@@ -30,6 +31,7 @@ Vue.use(VueRouter)
 let routes = [
     { path: '/dashboard', component: Dashboard},
     { path: '/profile', component: Profile },
+    { path: '/developer', component: Developer },
     { path: '/users', component: Users }
   ]
   
@@ -74,7 +76,26 @@ let routes = [
   window.toast =toast
 
   window.Fire = new Vue();
+
+
+
+///Paspport Authentication import 
+Vue.component(
+    'passport-clients',
+    require('./components/passport/Clients.vue').default
+);
+
+Vue.component(
+    'passport-authorized-clients',
+    require('./components/passport/AuthorizedClients.vue').default
+);
+
+Vue.component(
+    'passport-personal-access-tokens',
+    require('./components/passport/PersonalAccessTokens.vue').default
+);
  
+
 
 
 /**
