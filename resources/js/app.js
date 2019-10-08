@@ -3,8 +3,8 @@
  * includes Vue and other libraries. It is a great starting point when
  * building robust, powerful web applications using Vue and Laravel.
  */
-
 require('./bootstrap');
+
 
 window.Vue = require('vue');
 
@@ -17,6 +17,7 @@ import moment from 'moment'
 
 //Validation Vform
 import { Form, HasError, AlertError } from 'vform'
+
 window.Form =Form;  //registered globally
 Vue.component(HasError.name, HasError)
 Vue.component(AlertError.name, AlertError)

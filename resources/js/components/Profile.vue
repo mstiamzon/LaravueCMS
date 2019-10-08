@@ -13,7 +13,7 @@
                 <h5 class="widget-user-desc text-right black">Web Designer</h5>
               </div>
               <div class="widget-user-image">
-                <img class="img-circle" src="/img/man1.png" alt="User Avatar">
+                <img class="img-circle" :src="getProfilePhoto()" alt="User Avatar">
               </div>
               <div class="card-footer">
                 <div class="row">
@@ -179,25 +179,22 @@
                       <div class="form-group row">
                         <label for="inputName" class="col-sm-2 col-form-label">Name</label>
                         <div class="col-sm-10">
-                          <input type="email" v-model="form.name" class="form-control" id="inputName" placeholder="Name">
+                          <input type="name" v-model="form.name" class="form-control" id="inputName" placeholder="Name"  
+                          :class="{ 'is-invalid': form.errors.has('name')}"> <has-error :form="form" field="email"> </has-error>
                         </div>
                       </div>
                       <div class="form-group row">
                         <label for="inputEmail" class="col-sm-2 col-form-label">Email</label>
                         <div class="col-sm-10">
-                          <input type="email" v-model="form.email" class="form-control" id="inputEmail" placeholder="Email">
-                        </div>
-                      </div>
-                      <div class="form-group row">
-                        <label for="inputName2" class="col-sm-2 col-form-label">Name</label>
-                        <div class="col-sm-10">
-                          <input type="text" class="form-control" id="inputName2" placeholder="Name">
+                          <input type="email" v-model="form.email" class="form-control" id="inputEmail" placeholder="Email"
+                             :class="{ 'is-invalid': form.errors.has('email')}">
+                             <has-error :form="form" field="email"> </has-error>
                         </div>
                       </div>
                       <div class="form-group row">
                         <label for="inputExperience" class="col-sm-2 col-form-label">Experience</label>
                         <div class="col-sm-10">
-                          <textarea class="form-control" id="inputExperience" placeholder="Experience"></textarea>
+                          <textarea v-model="form.bio" class="form-control" id="bio" placeholder="Experience"></textarea>
                         </div>
                       </div>
                       <div class="form-group row">
@@ -207,33 +204,14 @@
                         </div>
                       </div>
                      <div class="form-group row">
-                           <label for="password" class="col-sm-2 control-label">Passport (leave empty if not changing)</label>
+                           <label for="password" class="col-sm-2 control-label">Password</label>
                           <div class="col-sm-10">
-                                <input type="password" class="form-control"  placeholder="Passport">
+                                <input type="password" v-model="form.password"  class="form-control"  placeholder="Password"
+                                  :class="{ 'is-invalid': form.errors.has('password') }">
+                                   <has-error :form="form" field="photo"></has-error>
                           </div>
-                         
-                           <!-- <div class="col-sm-12">
-                           <input type="password"  v-model="form.password" class="form-control"
-                               id="password"  placeholder="Passport"
-                               :class="{ 'is-invalid': form.errors.has('password') }">
-                            <has-error :form="form" field="password"></has-error>
-                           </div> -->
                        </div>
-                      <!-- <div class="form-group row">
-                        <label for="inputSkills" class="col-sm-2 col-form-label">Skills</label>
-                        <div class="col-sm-10">
-                          <input type="text" class="form-control" id="inputSkills" placeholder="Skills">
-                        </div>
-                      </div>
-                      <div class="form-group row">
-                        <div class="offset-sm-2 col-sm-10">
-                          <div class="checkbox">
-                            <label>
-                              <input type="checkbox"> I agree to the <a href="#">terms and conditions</a>
-                            </label>
-                          </div>
-                        </div>
-                      </div> -->
+                   
 
                       <div class="form-group row">
                         <div class="offset-sm-2 col-sm-10">
@@ -277,26 +255,50 @@
              .then(({data}) => (this.form.fill(data)));
         },
         methods:{
+            getProfilePhoto(){
+                return "img/profile/" + this.form.photo;
+            },
            updateProfile(e)  {
                let file =e.target.files[0];
                  console.log(file)
                let reader =new FileReader();
-                 reader.onloadend = (file)=> {
-                     console.log('RESULT',reader.result);
-                    this.form.photo =reader.result; //get data base 64
-                  };
-                 reader.onerror = function() {
-                     console.log('there are some problems');
-                   };
-                 reader.readAsDataURL(file);
 
-              console.log('Uploading')
+                //filesize
+
+                if (file['size'] < 2111775) {  //2mb
+                     reader.onloadend = (file)=> {
+                     console.log('RESULT',reader.result);
+                    this.form.photo = reader.result; //get data base 64
+                  };
+                  reader.readAsDataURL(file);
+
+                   console.log('Uploading')
+                }
+                else{
+                    Swal({
+                        type: 'error',
+                        title: 'Oops..',
+                        text:'You are uploading a large file'
+                    })
+                }
+
+                
            },
            updateInfo(){
-               this.form.put("api/profile/")
-               .then(()=>{ })
-                .catch(()=>{
+             this.$Progress.start();  //start progress bar
 
+                //if password is null
+              if (this.for.password == '') {
+                  this.form.password = undefined;
+              }
+                 
+               this.form.put("api/profile")
+               .then(()=>{ 
+                    this.$Progress.finish(); 
+
+                 })
+                .catch(()=>{
+                        this.$Progress.fail() 
                 })
            }
         },

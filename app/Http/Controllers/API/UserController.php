@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\User;
 use Illuminate\Support\Facades\Hash;
 
+
 class UserController extends Controller
 {
     public function __construct()
@@ -71,17 +72,51 @@ class UserController extends Controller
         //return Auth::user();
     }
 
-    public function updateProfile()
+    public function updateProfile(Request $request)
     {
+         //check authenticated user
         $user = auth('api')->user();
 
-        if($request->photo)
-        {
-            $name = time().'.'.explode('/',explode(':',substr($request->photo,0,strpos
-            ($request->photo,';')))[1])[1];
+        //validate 
+      
+        $this->validate($request,[
+            'name' => 'required|string|max:191',
+            'email' => 'required|string|email|max:255|unique:users,email,'.$user->id,
+            'password' => 'sometimes|required|min:6'
+          ]);
 
+
+        //update the current photo 
+        $currentPhoto = $user->photo;
+
+        if($request->photo != $currentPhoto)  //if u have request image 
+        {
+            $name = time().'.' . explode('/', explode(':', substr($request->photo,0, strpos($request->photo, ';')))[1])[1];
             \Image::make($request->photo)->save(public_path('img/profile/').$name);
-        };
+            
+            //modify file name
+            $request->merge(['photo' =>$name]);
+
+
+            ///comment: if uploaded ,then delete the old photo condition
+            $userPhoto = public_path('img/profile/').$currentPhoto;
+            if (file_exists($userPhoto)) { //if flie exist
+                //delete the old userphoto
+                @unlink($userPhoto);
+            }
+            
+            
+        }
+        ///if user has change password hash/encrypt it
+         if (!empty($request->password)) {
+             $request->merge(['password'=> Hash::make($request['password'])]);
+         }
+
+
+
+        $user->update($request->all());
+
+        return ['message' => "Success"];
     }
 
 
@@ -99,7 +134,7 @@ class UserController extends Controller
         $this->validate($request,[
             'name' => 'required|string|max:191',
             'email' => 'required|string|email|max:255|unique:users,email,'.$user->id,
-            'password' => 'sometimes|string|min:6'
+            'password' => 'sometimes|min:6'
           ]);
 
         $user->update($request->all());
