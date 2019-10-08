@@ -52,7 +52,7 @@
               <div class="card-header p-2">
                 <ul class="nav nav-pills">
                   <li class="nav-item"><a class="nav-link active" href="#activity" data-toggle="tab">Activity</a></li>
-                  <li class="nav-item"><a class="nav-link" href="#timeline" data-toggle="tab">Timeline</a></li>
+                  <!-- <li class="nav-item"><a class="nav-link" href="#timeline" data-toggle="tab">Timeline</a></li> -->
                   <li class="nav-item"><a class="nav-link" href="#settings" data-toggle="tab">Settings</a></li>
                 </ul>
               </div><!-- /.card-header -->
@@ -192,10 +192,11 @@
                         </div>
                       </div>
                       <div class="form-group row">
-                        <label for="inputExperience" class="col-sm-2 col-form-label">Experience</label>
-                        <div class="col-sm-10">
-                          <textarea v-model="form.bio" class="form-control" id="bio" placeholder="Experience"></textarea>
-                        </div>
+                        <label for="inputExperience" class="col-sm-2 control-label">Experience</label>
+                              <div class="col-sm-10">
+                              <textarea  v-model="form.bio" class="form-control" id="inputExperience" placeholder="Experience" :class="{ 'is-invalid': form.errors.has('bio') }"></textarea>
+                                <has-error :form="form" field="bio"></has-error>
+                                </div>
                       </div>
                       <div class="form-group row">
                         <label for="inputExperience"  class="col-sm-2 col-form-label">Profile Photo</label>
@@ -203,15 +204,21 @@
                             <input type="file" @change="updateProfile" name="photo" class="form-input">
                         </div>
                       </div>
-                     <div class="form-group row">
-                           <label for="password" class="col-sm-2 control-label">Password</label>
-                          <div class="col-sm-10">
-                                <input type="password" v-model="form.password"  class="form-control"  placeholder="Password"
-                                  :class="{ 'is-invalid': form.errors.has('password') }">
-                                   <has-error :form="form" field="photo"></has-error>
-                          </div>
-                       </div>
-                   
+                  
+                         <div class="form-group row">
+                                    <label for="password" class="col-sm-2 control-label">Password</label>
+
+                                    <div class="col-sm-10">
+                                    <input type="password"
+                                        v-model="form.password"
+                                        class="form-control"
+                                        id="password"
+                                        placeholder="Password"
+                                        :class="{ 'is-invalid': form.errors.has('password') }"
+                                    >
+                                     <has-error :form="form" field="password"></has-error>
+                                    </div>
+                                </div>
 
                       <div class="form-group row">
                         <div class="offset-sm-2 col-sm-10">
@@ -256,7 +263,10 @@
         },
         methods:{
             getProfilePhoto(){
-                return "img/profile/" + this.form.photo;
+                 let photo = (this.form.photo.length > 200 ) ? this.form.photo : "img/profile/"+this.form.photo ;
+                //return "img/profile/" + this.form.photo;
+
+                return photo;
             },
            updateProfile(e)  {
                let file =e.target.files[0];
@@ -288,12 +298,13 @@
              this.$Progress.start();  //start progress bar
 
                 //if password is null
-              if (this.for.password == '') {
-                  this.form.password = undefined;
-              }
+            //   if (this.form.password == '') {
+            //       this.form.password = undefined;
+            //   }
                  
                this.form.put("api/profile")
                .then(()=>{ 
+                    Fire.$emit('AfterCreate'); 
                     this.$Progress.finish(); 
 
                  })

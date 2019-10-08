@@ -4042,6 +4042,13 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -4069,7 +4076,9 @@ __webpack_require__.r(__webpack_exports__);
   },
   methods: {
     getProfilePhoto: function getProfilePhoto() {
-      return "img/profile/" + this.form.photo;
+      var photo = this.form.photo.length > 200 ? this.form.photo : "img/profile/" + this.form.photo; //return "img/profile/" + this.form.photo;
+
+      return photo;
     },
     updateProfile: function updateProfile(e) {
       var _this2 = this;
@@ -4100,12 +4109,13 @@ __webpack_require__.r(__webpack_exports__);
 
       this.$Progress.start(); //start progress bar
       //if password is null
-
-      if (this["for"].password == '') {
-        this.form.password = undefined;
-      }
+      //   if (this.form.password == '') {
+      //       this.form.password = undefined;
+      //   }
 
       this.form.put("api/profile").then(function () {
+        Fire.$emit('AfterCreate');
+
         _this3.$Progress.finish();
       })["catch"](function () {
         _this3.$Progress.fail();
@@ -84081,35 +84091,48 @@ var render = function() {
                       _c(
                         "label",
                         {
-                          staticClass: "col-sm-2 col-form-label",
+                          staticClass: "col-sm-2 control-label",
                           attrs: { for: "inputExperience" }
                         },
                         [_vm._v("Experience")]
                       ),
                       _vm._v(" "),
-                      _c("div", { staticClass: "col-sm-10" }, [
-                        _c("textarea", {
-                          directives: [
-                            {
-                              name: "model",
-                              rawName: "v-model",
-                              value: _vm.form.bio,
-                              expression: "form.bio"
-                            }
-                          ],
-                          staticClass: "form-control",
-                          attrs: { id: "bio", placeholder: "Experience" },
-                          domProps: { value: _vm.form.bio },
-                          on: {
-                            input: function($event) {
-                              if ($event.target.composing) {
-                                return
+                      _c(
+                        "div",
+                        { staticClass: "col-sm-10" },
+                        [
+                          _c("textarea", {
+                            directives: [
+                              {
+                                name: "model",
+                                rawName: "v-model",
+                                value: _vm.form.bio,
+                                expression: "form.bio"
                               }
-                              _vm.$set(_vm.form, "bio", $event.target.value)
+                            ],
+                            staticClass: "form-control",
+                            class: { "is-invalid": _vm.form.errors.has("bio") },
+                            attrs: {
+                              id: "inputExperience",
+                              placeholder: "Experience"
+                            },
+                            domProps: { value: _vm.form.bio },
+                            on: {
+                              input: function($event) {
+                                if ($event.target.composing) {
+                                  return
+                                }
+                                _vm.$set(_vm.form, "bio", $event.target.value)
+                              }
                             }
-                          }
-                        })
-                      ])
+                          }),
+                          _vm._v(" "),
+                          _c("has-error", {
+                            attrs: { form: _vm.form, field: "bio" }
+                          })
+                        ],
+                        1
+                      )
                     ]),
                     _vm._v(" "),
                     _c("div", { staticClass: "form-group row" }, [
@@ -84160,6 +84183,7 @@ var render = function() {
                             },
                             attrs: {
                               type: "password",
+                              id: "password",
                               placeholder: "Password"
                             },
                             domProps: { value: _vm.form.password },
@@ -84178,7 +84202,7 @@ var render = function() {
                           }),
                           _vm._v(" "),
                           _c("has-error", {
-                            attrs: { form: _vm.form, field: "photo" }
+                            attrs: { form: _vm.form, field: "password" }
                           })
                         ],
                         1
@@ -84287,17 +84311,6 @@ var staticRenderFns = [
               attrs: { href: "#activity", "data-toggle": "tab" }
             },
             [_vm._v("Activity")]
-          )
-        ]),
-        _vm._v(" "),
-        _c("li", { staticClass: "nav-item" }, [
-          _c(
-            "a",
-            {
-              staticClass: "nav-link",
-              attrs: { href: "#timeline", "data-toggle": "tab" }
-            },
-            [_vm._v("Timeline")]
           )
         ]),
         _vm._v(" "),
