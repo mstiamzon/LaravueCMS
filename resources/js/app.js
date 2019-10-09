@@ -16,6 +16,7 @@ import moment from 'moment'
 
 //Gate.js import if user is authenticated
 import Gate from "./Gate.js";
+
 Vue.prototype.$gate = new Gate(window.user);
 
 
