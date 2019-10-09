@@ -23,24 +23,36 @@ class AuthServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function boot(GateContract $gate)
+    public function boot()
     {
-        $this->registerPolicies($gate);
+        $this->registerPolicies();
         
-        $gate->define('isAdmin',function($user){
-            return $user->type == 'admin';
-        });
-        $gate->define('isAdmin',function($user){
-            return $user->type == 'user';
-        });
-        $gate->define('isAdmin',function($user){
-            return $user->type == 'organization';
-        });
-        $gate->define('isAdmin',function($user, $profileUser){
-            return $user->id === '$profileUser->id';
+        Gate::define('isAdmin',function($user){
+            return $user->type === 'admin';
         });
 
+        Gate::define('isUser',function($user){
+            return $user->type === 'user';
+        });
 
+        Gate::define('isAuthor',function($user){
+            return $user->type === 'author';
+        });
+
+        Gate::define('isAdminOrAuthor',function($user){
+            return (this.user.type === 'admin' || this.user.type === 'author');
+        });
+
+        Gate::define('isAuthorOrUser',function($user){
+            return (this.user.type === 'admin' || this.user.type === 'user');
+        });
+        
+
+        // $gate->define('isprofileUser',function($user, $profileUser){
+        //     return $user->id === '$profileUser->id';
+        // });
+
+        
         Passport::routes();
         
         //

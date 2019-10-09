@@ -14,6 +14,9 @@ class UserController extends Controller
     {
         //authentication to not access the api from postman :disable if u want to use api
         $this->middleware('auth:api');
+        
+        ///only admin can access uncomment if u want only admin to access
+        // $this->authorize('isAdmin');
     }
 
 
@@ -24,7 +27,14 @@ class UserController extends Controller
      */
     public function index()
     {
-        return User::latest()->paginate(10);
+        ///only admin can access uncomment if u want only admin to access
+        // $this->authorize('isAdmin');
+
+         if (\Gate::allows('isAdmin') || \Gate::allows('isAuthor')) {
+             return User::latest()->paginate(20);
+            
+         }
+        // return User::latest()->paginate(20);
     }
 
     /**
@@ -138,6 +148,12 @@ class UserController extends Controller
           ]);
 
         $user->update($request->all());
+
+         ///if user has change password hash/encrypt it
+        //  if (!empty($request->password)) {
+        //     $request->merge(['password'=> Hash::make($request['password'])]);
+        // }
+
         return ['message'=> 'Updated the user info'];
     }
 
@@ -149,6 +165,9 @@ class UserController extends Controller
      */
     public function destroy($id)
     {
+        ///Authorize person who cant delete user table
+       $this->authorize('isAdmin');
+
         $user =User::findOrFail($id);
 
         //delete the user

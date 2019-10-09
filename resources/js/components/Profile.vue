@@ -263,10 +263,11 @@
         },
         methods:{
             getProfilePhoto(){
-                 let photo = (this.form.photo.length > 200 ) ? this.form.photo : "img/profile/"+this.form.photo ;
+                let photo = (this.form.photo.length > 300 ) ? this.form.photo : "img/profile/"+ this.form.photo ;
+                return photo;
+              
                 //return "img/profile/" + this.form.photo;
 
-                return photo;
             },
            updateProfile(e)  {
                let file =e.target.files[0];
@@ -285,7 +286,7 @@
                    console.log('Uploading')
                 }
                 else{
-                    Swal({
+                    Swal.fire({
                         type: 'error',
                         title: 'Oops..',
                         text:'You are uploading a large file'
@@ -305,10 +306,16 @@
                this.form.put("api/profile")
                .then(()=>{ 
                     Fire.$emit('AfterCreate'); 
+                      Swal.fire(
+                     'Updated!',
+                    'Information has been Updated.',
+                    'success'
+                   )
                     this.$Progress.finish(); 
 
                  })
                 .catch(()=>{
+                      Swal.fire("Failed!", "There was something wronge.", "warning");
                         this.$Progress.fail() 
                 })
            }

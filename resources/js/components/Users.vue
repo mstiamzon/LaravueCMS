@@ -1,6 +1,6 @@
 <template>
     <div class="container">
-       <div class="row">
+       <div class="row mt-5" v-if="$gate.isAdminOrAuthor()">
           <div class="col-12">
             <div class="card">
               <div class="card-header">
@@ -56,7 +56,12 @@
         </div>
 
 
-
+    <!-- added for not admin /404 not found  -->
+      <div v-if="!$gate.isAdminOrAuthor()">
+            <not-found></not-found>
+        </div>
+ 
+ 
  <!-- Modal -->
 <div class="modal fade" id="addNew" tabindex="-1" role="dialog" aria-labelledby="addNewLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" role="document">
@@ -155,6 +160,7 @@
                 Fire.$emit('AfterCreate');
               })
               .catch(()=>{
+                Swal.fire("Failed!", "There was something wronge.", "warning");
                  this.$Progress.fail();  //start progress bar
 
               });
@@ -183,23 +189,28 @@
 
               //Send request to the server
               if (result.value) {
-              this.form.delete('api/user/' +id).then(()=>{ 
+              this.form.delete('api/user/' + id).then(()=>{ 
                 Swal.fire(
                 'Deleted!',
                 'Your file has been deleted.',
-               'success'
+                'success'
                )
              //Fire Custom event
              Fire.$emit('AfterCreate')  
               }).catch(()=>{
-                 swal("Failed","There was something wrong","warning");
+                  Swal.fire("Failed!", "There was something wronge.", "warning");
               })
          }
             
         })
           },
             loadUser(){
-                axios.get("api/user").then(({data})=>(this.users = data.data));
+            //  if (this.$gate.isAdmin()) {
+            //    axios.get("api/user").then(({data})=>(this.users = data.data));
+            //  } 
+             if (this.$gate.isAdminOrAuthor()) {
+               axios.get("api/user").then(({data})=>(this.users = data.data));
+             } 
             },
             createUser(){
                  this.$Progress.start()  //start progress bar

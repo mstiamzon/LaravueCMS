@@ -14,6 +14,10 @@ import Developer from './components/Developer.vue'
 import Users from './components/Users.vue'
 import moment from 'moment'
 
+//Gate.js import if user is authenticated
+import Gate from "./Gate.js";
+Vue.prototype.$gate = new Gate(window.user);
+
 
 //Validation Vform
 import { Form, HasError, AlertError } from 'vform'
@@ -96,6 +100,11 @@ Vue.component(
     require('./components/passport/PersonalAccessTokens.vue').default
 );
  
+//Not Found Vue
+Vue.component(
+  'not-found',
+  require('./components/NotFound.vue').default
+);
 
 
 
