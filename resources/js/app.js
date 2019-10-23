@@ -12,6 +12,7 @@ import Profile from './components/Profile.vue'
 import Dashboard from './components/Dashboard.vue'
 import Developer from './components/Developer.vue'
 import Users from './components/Users.vue'
+import NotFound from './components/NotFound.vue'
 import moment from 'moment'
 
 //Gate.js import if user is authenticated
@@ -28,6 +29,11 @@ Vue.component(HasError.name, HasError)
 Vue.component(AlertError.name, AlertError)
 
 
+//Pagination
+
+Vue.component('pagination', require('laravel-vue-pagination'));
+
+
 // Added Routes
 import VueRouter from 'vue-router'
 import { Verify } from 'crypto';
@@ -38,7 +44,8 @@ let routes = [
     { path: '/dashboard', component: Dashboard},
     { path: '/profile', component: Profile },
     { path: '/developer', component: Developer },
-    { path: '/users', component: Users }
+    { path: '/users', component: Users },
+    { path: '*', component: NotFound }
   ]
   
   //3. Create the router instance and pass the `routes` option
@@ -129,6 +136,18 @@ Vue.component('example-component', require('./components/ExampleComponent.vue'))
  */
 
 const app = new Vue({
+    data:{
+      search:''
+    },
+    methods:{ 
+     searchit(){
+
+      Fire.$emit('searching'); //custom event
+       console.log('searching')
+     }
+
+    },
+
     el: '#app',
     router // Make sure to inject the router with the router option to make the // whole app router-aware.
 });

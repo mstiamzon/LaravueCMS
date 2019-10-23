@@ -1,3 +1,10 @@
+<style>
+  .pagination {
+    justify-content: center;
+
+  }
+</style>
+
 <template>
     <div class="container">
        <div class="row mt-5" v-if="$gate.isAdminOrAuthor()">
@@ -34,7 +41,7 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr v-for="user in users" :key="user.id">
+                    <tr v-for="user in users.data" :key="user.id">
                      <td>{{user.id }}</td>
                       <td>{{user.name }}</td>
                       <td>{{user.email }}</td>
@@ -50,6 +57,11 @@
                 </table>
               </div>
               <!-- /.card-body -->
+                <!-- pagination -->
+                <div class="card-footer">
+                  <pagination :data="users" @pagination-change-page="getResults"></pagination>
+                </div>
+
             </div>
             <!-- /.card -->
           </div>
@@ -144,6 +156,13 @@
 
         },
         methods:{
+          // Our method to GET results from a Laravel endpoint
+	      	getResults(page = 1) {
+		        	axios.get('api/user?page=' + page)
+			      	.then(response => {
+				  	   this.users = response.data;
+			    	});
+	      	},
           updateUser(){
             console.log('Editing Data')
             this.$Progress.start();
@@ -209,7 +228,7 @@
             //    axios.get("api/user").then(({data})=>(this.users = data.data));
             //  } 
              if (this.$gate.isAdminOrAuthor()) {
-               axios.get("api/user").then(({data})=>(this.users = data.data));
+               axios.get("api/user").then(({data})=>(this.users = data));
              } 
             },
             createUser(){
@@ -241,6 +260,19 @@
             }
         },
         created(){
+          Fire.$on('searching',()=>{
+              //get info 
+              let query = this.$parent.search;
+              axios.get('api/findUser?q=' + query)
+              .then((data)=> {
+                  //successful
+                  this.users = data.data;
+              })
+              .catch(()=>{
+
+              })
+
+          })
             this.loadUser();
            //Fire Custom event
             Fire.$on('AfterCreate',()=> {

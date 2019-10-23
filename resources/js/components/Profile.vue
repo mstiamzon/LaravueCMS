@@ -9,8 +9,8 @@
                <div class="card card-widget widget-user">
               <!-- Add the bg color to the header using any of the bg-* classes -->
               <div class="widget-user-header text-white" style="background: url('../dist/img/photo1.png') center center;">
-                <h3 class="widget-user-username text-right black">Elizabeth Pierce</h3>
-                <h5 class="widget-user-desc text-right black">Web Designer</h5>
+                <h3 class="widget-user-username text-right black">{{this.form.name}}</h3>
+                <h5 class="widget-user-desc text-right black">{{this.form.type}}</h5>
               </div>
               <div class="widget-user-image">
                 <img class="img-circle" :src="getProfilePhoto()" alt="User Avatar">
