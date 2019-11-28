@@ -19,7 +19,10 @@ Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
 
-
+//invoice
+Route::get('invoice',function(){
+    return view('invoice');
+});
 //Route::get('{path}', 'HomeController@index')->where('path','([A-Z\d-\/_.]+)?');
 
 Route::get('{path}','HomeController@index')->where( 'path', '([A-z]+)?' );
